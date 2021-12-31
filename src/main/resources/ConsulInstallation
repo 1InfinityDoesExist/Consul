@@ -1,0 +1,37 @@
+wget https://releases.hashicorp.com/consul/1.4.4/consul_1.4.4_linux_amd64.zip
+apt install unzip
+unzip consul_1.4.4_linux_amd64.zip
+cp consul /usr/bin
+consul --version
+vim /etc/systemd/system/consul.service
+
+********************************
+
+
+[Unit]
+Description="HashiCorp Consul - A service mesh solution"
+Documentation=https://www.consul.io/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/bin/consul  agent -dev -ui -bind 127.0.0.1 -client 127.0.0.1 -node consuldev01
+ExecReload=/usr/bin/consul reload
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+************************************
+vi /etc/hosts
+sudo systemctl enable consul
+sudo systemctl start consul
+sudo systemctl status consul
+consul members
+consul members -http-addr=127.0.0.1:8500
