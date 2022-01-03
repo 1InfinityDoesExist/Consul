@@ -13,6 +13,8 @@ import com.consul.helper.handler.ConsulHandler;
 
 import reactor.core.publisher.Mono;
 
+
+//http://localhost:8500/v1/kv/config/consul-demo%2Cdev/?recurse
 @Configuration
 public class ConsulRouter {
 
