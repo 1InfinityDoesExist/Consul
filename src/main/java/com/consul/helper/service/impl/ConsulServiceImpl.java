@@ -1,15 +1,15 @@
 package com.consul.helper.service.impl;
 
-import java.util.List;
+import java.time.Duration;
 import java.util.stream.Stream;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.consul.helper.model.ConsulPropertyCreateRequest;
 import com.consul.helper.model.ConsulPropertyDeleteRequest;
 import com.consul.helper.service.ConsulService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -19,12 +19,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class ConsulServiceImpl implements ConsulService {
 	private static WebClient webClient;
-	private static ObjectMapper objectMapper;
-	private static CollectionType collectionType;
 	static {
 		webClient = WebClient.create();
-		objectMapper = new ObjectMapper();
-		collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, String.class);
 	}
 
 	@Override
@@ -45,6 +41,8 @@ public class ConsulServiceImpl implements ConsulService {
 	/**
 	 * Convert Mono To Flux flatMapMany(Flux::fromIterable);
 	 * 
+	 * http://localhost:8500/v1/kv/config/consul-demo,dev/?keys
+	 * 
 	 */
 	@Override
 	public Mono<String[]> getAllKeys(String consulURL, String projectPath) {
@@ -60,6 +58,30 @@ public class ConsulServiceImpl implements ConsulService {
 							.toArray(String[]::new);
 				})
 				.log();
+	}
+
+	
+	/**
+	 * via payload string will contain "" as a result the value in consul will also contain ""
+	 * 
+	 * properties will be read from application.properties..so no issue.
+	 */
+	@Override
+	public Mono<String> addKeyValuePairInConsulUsingPUT(ConsulPropertyCreateRequest request) {
+		log.info("-----About to add /update key value in consul.-----");
+		request.getProperties().entrySet().stream()
+		.forEach(prop -> {
+			webClient.put()
+				.uri("http://" + request.getConsulUrl() + "/v1/kv/config/" + request.getProjectPath() + "/"
+								+ prop.getKey())
+				.body(Mono.just(prop.getValue()), Object.class)
+				.accept(MediaType.APPLICATION_JSON)
+				.retrieve()
+				.bodyToMono(Boolean.class)
+				.timeout(Duration.ofMillis(5000))
+				.subscribe();
+		});
+		return Mono.just("Success");
 	}
 
 }
