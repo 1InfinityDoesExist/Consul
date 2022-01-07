@@ -2,7 +2,7 @@
 ---
 
 ##### Api to get all keys. 
-##### Api to get all key-vlaue. 
+##### Api to get all key-value. 
 ##### Api to delete List of key-value pair.  
 ##### Api to add new key-value (List of key-value pair). 
 ##### Api to update existing key-value (List of key-value pair)
