@@ -51,7 +51,7 @@ public class ConsulController {
 	 * @return
 	 */
 	@GetMapping("/keys")
-	public ResponseEntity<Mono<Object>> getAllKeysUsingGET(
+	public ResponseEntity<Mono<String[]>> getAllKeysUsingGET(
 			@RequestParam(value = "consulURL", required = true) String consulURL,
 			@RequestParam(value = "projectPath", required = true) String projectPath) {
 
