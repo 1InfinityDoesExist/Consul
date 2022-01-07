@@ -24,13 +24,20 @@ public class ConsulRouter {
 	@Autowired
 	private ConsulHandler handler;
 
+	
+	/**
+	 * In order to make the below api work. Just comment out the "spring-boot-starter-web" dependency in pom.xml file.
+	 * @return
+	 */
 	@Bean
 	public RouterFunction<ServerResponse> routes() {
 		return RouterFunctions.route()
 				.GET("/consul-properties", handler::getAllConsulProperties)
 				.GET("/key", request -> {
 					return ServerResponse.ok().body(BodyInserters.fromPublisher(Mono.just(key), String.class));
-				}).build();
+				})
+				.DELETE("/remove-props", handler::deletePropertyFromConsul) // in development phase.
+				.build();
 
 	}
 
