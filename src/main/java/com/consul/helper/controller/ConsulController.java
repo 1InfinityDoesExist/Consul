@@ -1,16 +1,20 @@
 package com.consul.helper.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.consul.helper.model.ApplicationPropertiesConsul;
 import com.consul.helper.model.ConsulPropertyCreateRequest;
 import com.consul.helper.model.ConsulPropertyDeleteRequest;
 import com.consul.helper.service.ConsulService;
@@ -72,6 +76,13 @@ public class ConsulController {
 
 		log.info("--Add key value pair in the consul.----");
 		return ResponseEntity.status(HttpStatus.OK).body(consulService.addKeyValuePairInConsulUsingPUT(request));
+	}
+
+	@PostMapping("/app-to-consul")
+	public ResponseEntity<Mono<String>> appPropToConsul(@RequestBody ApplicationPropertiesConsul request) throws IOException {
+		log.info("---Add all application.properties key-value pair to consul");
+		return ResponseEntity.status(HttpStatus.OK).body(consulService.appPropertiesToConsul(request));
+
 	}
 
 }
